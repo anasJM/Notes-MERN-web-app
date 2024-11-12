@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/Navbar/Navbar";
 import PasswordInput from "../../components/Input/PasswordInput";
 import { validateEmail } from "../../utils/helper";
 
@@ -35,7 +34,6 @@ const Signup = () => {
 
   return (
     <>
-      <Navbar />
       <div className="flex items-center justify-center mt-28">
         <div className="w-96 border rounded bg-white px-7 py-10">
           <form onSubmit={handleSignUp}>
