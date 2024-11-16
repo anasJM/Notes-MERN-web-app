@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 
 mongoose.connect(config.ConnectionString);
 
-const User = require("./models/use.model");
+const User = require("./models/user.model");
+const Note = require("./models/note.model");
 
 const express = require("express");
 const cors = require("cors");
@@ -26,7 +27,7 @@ app.get("/", (req, res) => {
   res.json({ data: "hello!" });
 });
 
-// ***********create account*********** //
+// *********** create account *********** //
 app.post("/create-account", async (req, res) => {
   const { fullName, email, password } = req.body;
 
@@ -79,6 +80,7 @@ app.post("/create-account", async (req, res) => {
   });
 });
 
+// *********** Login *********** //
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -115,6 +117,49 @@ app.post("/login", async (req, res) => {
     return res.json({
       error: true,
       message: "Invalid Credentials",
+    });
+  }
+});
+
+// *********** Add Note *********** //
+app.post("/add-note", authenticateToken, async (req, res) => {
+  const { title, content, tags } = req.body;
+  const user = req.user;
+  // console.log(user.user._id);
+  // console.log(user);
+
+  if (!title) {
+    return res.status(400).json({ error: true, message: "Enter the title" });
+  }
+
+  if (!content) {
+    return res.status(400).json({ error: true, message: "Enter the content" });
+  }
+
+  // if (!user) {
+  //   return res
+  //     .status(400)
+  //     .json({ error: true, message: "User not authenticated" });
+  // }
+
+  try {
+    const note = new Note({
+      title,
+      content,
+      tags: tags || [],
+      userId: user.user._id,
+    });
+
+    await note.save();
+
+    return res.json({
+      error: false,
+      message: "Note added successfully!",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message,
     });
   }
 });
