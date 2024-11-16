@@ -196,6 +196,25 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
   }
 });
 
+// ********** get all notes *********** //
+app.get("/get-all-notes/", authenticateToken, async (req, res) => {
+  const { user } = req.user;
+
+  try {
+    const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 });
+    // console.log(notes);
+    return res.json({
+      error: false,
+      message: "All notes retrieved successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message,
+    });
+  }
+});
+
 app.listen(8000);
 
 module.exports = app;
