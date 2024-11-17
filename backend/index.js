@@ -158,7 +158,7 @@ app.post("/add-note", authenticateToken, async (req, res) => {
   }
 });
 
-// ********** Edit note *********** //
+// ********** update note *********** //
 app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
   const noteId = req.params.noteId;
   const { title, content, tags, isPinned } = req.body;
@@ -267,6 +267,41 @@ app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
       error: false,
       note,
       message: "note has been deleted successfully!",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message,
+    });
+  }
+});
+
+// ********** update Pinned note *********** //
+app.put("/update-pinned-note/:noteId", authenticateToken, async (req, res) => {
+  const noteId = req.params.noteId;
+  const { user } = req.user;
+  const { isPinned } = req.body;
+
+  try {
+    const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+    if (!note) {
+      return res.status(404).json({ error: true, message: "Note not found" });
+    }
+
+    if (!isPinned) {
+      return res
+        .status(400)
+        .json({ error: true, message: "no changes provided" });
+    }
+
+    note.isPinned = isPinned;
+
+    await note.save();
+
+    return res.json({
+      error: false,
+      message: "Pin attribute has been updated successfully",
     });
   } catch (err) {
     return res.status(500).json({
