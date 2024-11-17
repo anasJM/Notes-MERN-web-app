@@ -311,6 +311,32 @@ app.put("/update-pinned-note/:noteId", authenticateToken, async (req, res) => {
   }
 });
 
+// ********** get user *********** //
+app.get("/get-user", authenticateToken, async (req, res) => {
+  const { user } = req.user;
+
+  try {
+    const isUser = await User.findOne({ _id: user._id });
+    console.log(isUser);
+    if (!isUser) {
+      return res.status(401).json({
+        message: "not a user",
+      });
+    }
+
+    return res.json({
+      error: false,
+      isUser,
+      message: "User retrieved successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message,
+    });
+  }
+});
+
 app.listen(8000);
 
 module.exports = app;
