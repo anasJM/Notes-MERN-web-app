@@ -197,7 +197,7 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
 });
 
 // ********** get all notes *********** //
-app.get("/get-all-notes/", authenticateToken, async (req, res) => {
+app.get("/get-all-notes", authenticateToken, async (req, res) => {
   const { user } = req.user;
 
   try {
@@ -205,7 +205,68 @@ app.get("/get-all-notes/", authenticateToken, async (req, res) => {
     // console.log(notes);
     return res.json({
       error: false,
+      notes,
       message: "All notes retrieved successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message,
+    });
+  }
+});
+
+// ********** get one note *********** //
+app.get("/get-note/:noteId", authenticateToken, async (req, res) => {
+  const { user } = req.user;
+  const noteId = req.params.noteId;
+
+  try {
+    const note = await Note.findOne({ _id: noteId });
+    // console.log(note);
+
+    if (!note) {
+      return res.status(404).json({
+        error: true,
+        message: "note not found",
+      });
+    }
+
+    return res.json({
+      error: false,
+      note,
+      message: "note retrieved successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message,
+    });
+  }
+});
+
+// ********** Delete note *********** //
+app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
+  const { user } = req.user;
+  const noteId = req.params.noteId;
+
+  try {
+    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    console.log(note);
+
+    if (!note) {
+      return res.status(404).json({
+        error: true,
+        message: "note not found",
+      });
+    }
+
+    await Note.deleteOne({ _id: noteId, userId: user._id });
+
+    return res.json({
+      error: false,
+      note,
+      message: "note has been deleted successfully!",
     });
   } catch (err) {
     return res.status(500).json({
