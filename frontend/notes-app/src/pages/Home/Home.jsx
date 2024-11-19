@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NoteCard from "../../components/Cards/NoteCard";
 import { MdAdd } from "react-icons/md";
 import AddEditNotes from "./AddEditNotes";
 import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
+import Navbar from "./../../components/Navbar/Navbar";
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -11,8 +14,38 @@ const Home = () => {
     data: null,
   });
 
+  const [userInfo, setUserInfo] = useState(null);
+
+  const navigate = useNavigate();
+
+  //Get use info
+  const getUserInfo = async () => {
+    try {
+      const response = await axiosInstance.get("/get-user");
+
+      if (response.data && response.data.isUser) {
+        setUserInfo(response.data.isUser);
+      }
+    } catch (error) {
+      if (error.response.status == 401) {
+        localStorage.clear();
+        navigate("/login");
+      } else {
+        console.error("Error fetching user info:", error);
+      }
+    }
+  };
+
+  // useEffect hook
+  useEffect(() => {
+    getUserInfo();
+    return () => {};
+  }, []);
+
   return (
     <>
+      <Navbar userInfo={userInfo}/>
+
       <div className="container mx-auto">
         <div className="grid grid-cols-3 gap-4 mt-8">
           <NoteCard
@@ -49,8 +82,8 @@ const Home = () => {
         className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-y-scroll"
       >
         <AddEditNotes
-        noteData={openAddEditModal.data}
-        type={openAddEditModal.type}
+          noteData={openAddEditModal.data}
+          type={openAddEditModal.type}
           onclose={() => {
             setOpenAddEditModal({ isShown: false, type: "add", data: null });
           }}
