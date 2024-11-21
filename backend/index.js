@@ -148,6 +148,7 @@ app.post("/add-note", authenticateToken, async (req, res) => {
 
     return res.json({
       error: false,
+      note,
       message: "Note added successfully!",
     });
   } catch (err) {
@@ -186,6 +187,7 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
 
     return res.json({
       error: false,
+      note,
       message: "Note has been updated successfully",
     });
   } catch (err) {
