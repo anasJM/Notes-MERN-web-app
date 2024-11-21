@@ -202,7 +202,7 @@ app.get("/get-all-notes", authenticateToken, async (req, res) => {
 
   try {
     const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 });
-    // console.log(notes);
+    console.log(notes);
     return res.json({
       error: false,
       notes,
