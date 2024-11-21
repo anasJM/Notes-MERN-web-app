@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Navbar from "./../../components/Navbar/Navbar";
 import Toast from "../../components/ToastMessage/Toast";
+import addNoteIcon from "../../assets/addNoteIcon.svg";
+import EmptyCard from "../../components/EmptyCard/EmptyCard";
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -115,21 +117,29 @@ const Home = () => {
       <Navbar userInfo={userInfo} />
 
       <div className="container mx-auto">
-        <div className="grid grid-cols-3 gap-4 mt-8">
-          {allNotes.map((note, index) => (
-            <NoteCard
-              key={note._id}
-              title={note.title}
-              date={note.createdOn}
-              content={note.content}
-              tags={note.tags}
-              isPinned={true}
-              onEdit={() => handleEdit(note)}
-              onDelete={() => deleteNote(note)}
-              onPinNote={() => {}}
-            />
-          ))}
-        </div>
+        {allNotes.length > 0 ? (
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            {allNotes.map((note, index) => (
+              <NoteCard
+                key={note._id}
+                title={note.title}
+                date={note.createdOn}
+                content={note.content}
+                tags={note.tags}
+                isPinned={true}
+                onEdit={() => handleEdit(note)}
+                onDelete={() => deleteNote(note)}
+                onPinNote={() => {}}
+              />
+            ))}
+          </div>
+        ) : (
+          // Empty card
+          <EmptyCard
+            imgSrc={addNoteIcon}
+            message={`Start creating your first note! click the add button.`}
+          />
+        )}
       </div>
 
       <button
