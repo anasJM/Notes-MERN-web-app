@@ -291,18 +291,27 @@ app.put("/update-pinned-note/:noteId", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: true, message: "Note not found" });
     }
 
+    // console.log("note:" + note);
+
     if (!isPinned) {
       return res
         .status(400)
         .json({ error: true, message: "no changes provided" });
     }
 
-    note.isPinned = isPinned;
+    if (typeof isPinned !== "boolean") {
+      return res
+        .status(400)
+        .json({ error: true, message: "Invalid value for isPinned" });
+    }
+
+    note.isPinned = !note.isPinned;
 
     await note.save();
 
     return res.json({
       error: false,
+      note,
       message: "Pin attribute has been updated successfully",
     });
   } catch (err) {

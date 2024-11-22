@@ -6,7 +6,7 @@ const Toast = ({ isShown, message, type, onClose }) => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       onClose();
-    }, 5000);
+    }, 2000);
 
     return () => {
       clearTimeout(timeoutId);

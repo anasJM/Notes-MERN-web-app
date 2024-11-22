@@ -123,6 +123,29 @@ const Home = () => {
     }
   };
 
+  // update isPinned
+  const updateIsPinned = async (noteData) => {
+    const noteId = noteData._id;
+    console.log("noteID:" + noteId);
+    const pinBool = !noteId.isPinned;
+
+    try {
+      const response = await axiosInstance.put(
+        `/update-pinned-note/${noteId}`,
+        {
+          isPinned: pinBool,
+        }
+      );
+
+      if (response.data && response.data.note) {
+        // showToastMessage(pinBool ? "Note Pinned" : "Note unPinned");
+        getAllNotes();
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   // handle clear search
   const handleClearSearch = () => {
     setIsSearch(false);
@@ -154,10 +177,10 @@ const Home = () => {
                 date={note.createdOn}
                 content={note.content}
                 tags={note.tags}
-                isPinned={true}
+                isPinned={note.isPinned}
                 onEdit={() => handleEdit(note)}
                 onDelete={() => deleteNote(note)}
-                onPinNote={() => {}}
+                onPinNote={() => updateIsPinned(note)}
               />
             ))}
           </div>
@@ -165,7 +188,11 @@ const Home = () => {
           // Empty card
           <EmptyCard
             imgSrc={isSearch ? "" : addNoteIcon}
-            message={isSearch ? "Oops, No notes found matching you search." : `Start creating your first note! click the add button.`}
+            message={
+              isSearch
+                ? "Oops, No notes found matching you search."
+                : `Start creating your first note! click the add button.`
+            }
           />
         )}
       </div>
